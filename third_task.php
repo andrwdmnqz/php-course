@@ -51,13 +51,10 @@ function outputHttpResponse($statuscode, $statusmessage, $headers, $body) {
  * 
  * @param string $method method of request
  * @param string $uri uri of request
- * @param string $headers headers of request
+ * @param array $headers headers of request
  * @param array $body body of request
  */
 function processHttpRequest($method, $uri, $headers, $body) {
-    $statuscode = "";
-    $statusMessage = "";
-    $responseBody = "";
 
     // Define needed headers
     $generatedHeaders = [
@@ -67,7 +64,7 @@ function processHttpRequest($method, $uri, $headers, $body) {
         "Content-Length" => "",
     ];
 
-    if (!str_starts_with($uri, "/sum")) {
+    if (!str_starts_with($uri, "/sum"))     {
         // If uri doesn't starts with sum - return client error
         $statuscode = "404";
         $statusMessage = "Not Found";
@@ -101,6 +98,11 @@ function processHttpRequest($method, $uri, $headers, $body) {
     outputHttpResponse($statuscode, $statusMessage, $generatedHeaders, $responseBody);
 }
 
+/**
+ * Function parces given string to http request
+ * 
+ * @param string given tcp string
+ */
 function parseTcpStringAsHttpRequest($string) {
     $splittedFirstLine = explode(" ", $string);
     $method = $splittedFirstLine[0];
@@ -117,7 +119,7 @@ function parseTcpStringAsHttpRequest($string) {
         if (strpos($line, ":")) {
             // If line isn't empty - extract header from it
             $header_name = substr($line, 0, strpos($line, ":"));
-            $headers[] = array($header_name, substr($line, strlen($header_name) + 2));
+            $headers[$header_name] = substr($line, strlen($header_name) + 2);
         }
     }
     
