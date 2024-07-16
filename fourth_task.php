@@ -1,5 +1,15 @@
 <?php
 
+define("STATUS_CODE_OK", "200");
+define("STATUS_CODE_BAD_REQUEST", "400");
+define("STATUS_CODE_UNAUTHORIZED", "401");
+define("STATUS_CODE_SERVER_ERROR", "500");
+
+define("STATUS_MESSAGE_OK", "OK");
+define("STATUS_MESSAGE_BAD_REQUEST", "Bad Request");
+define("STATUS_MESSAGE_UNAUTHORIZED", "Unauthorized");
+define("STATUS_MESSAGE_SERVER_ERROR", "Internal Server Error");
+
 /**
  * Function to read input data
  */
@@ -66,24 +76,18 @@ function processHttpRequest($method, $uri, $headers, $body) {
 
     // If uri or header incorrect - return client error
     if ($uri !== "/api/checkLoginAndPassword" || $headers["Content-Type"] !== "application/x-www-form-urlencoded") {
-        $statuscode = "400";
-        $statusMessage = "Bad Request";
-        $responseBody = "not found";
 
-        $generatedHeaders["Content-Length"] = strlen((string)$responseBody);
-        outputHttpResponse($statuscode, $statusMessage, $generatedHeaders, $responseBody);
+        $generatedHeaders["Content-Length"] = strlen("not found");
+        outputHttpResponse(STATUS_CODE_BAD_REQUEST, STATUS_MESSAGE_BAD_REQUEST, $generatedHeaders, "not found");
 
         return;
     }
 
     // If file not exists - 500 server error
     if (!file_exists("passwords.txt")) {
-        $statuscode = "500";
-        $statusMessage = "Internal Server Error";
-        $responseBody = "not found";
 
-        $generatedHeaders["Content-Length"] = strlen((string)$responseBody);
-        outputHttpResponse($statuscode, $statusMessage, $generatedHeaders, $responseBody);
+        $generatedHeaders["Content-Length"] = strlen("not found");
+        outputHttpResponse(STATUS_CODE_SERVER_ERROR, STATUS_MESSAGE_SERVER_ERROR, $generatedHeaders, "not found");
 
         return;
     }
@@ -91,8 +95,10 @@ function processHttpRequest($method, $uri, $headers, $body) {
     $fileLines = explode(PHP_EOL, file_get_contents("passwords.txt"));
             
     // Parse login and password from request
-    $login = substr($body, strpos($body, "=") + 1, strpos($body, "&") - strpos($body, "=") - 1);
-    $password = substr($body, strpos($body, "&") + strlen("&password="));
+    parse_str($body, $parsedBody);
+
+    $login = $parsedBody['login'];
+    $password = $parsedBody['password'];
         
     foreach ($fileLines as $line) {
         // Try to find match in the file. If found - 
@@ -101,22 +107,18 @@ function processHttpRequest($method, $uri, $headers, $body) {
 
         if ($login === $lineData[0] and $password === $lineData[1]) {
             $responseBody = '<h1 style="color:green">FOUND</h1>';
-            $statuscode = "200";
-            $statusMessage = "OK";
 
-            $generatedHeaders["Content-Length"] = strlen((string)$responseBody);
-            outputHttpResponse($statuscode, $statusMessage, $generatedHeaders, $responseBody);
+            $generatedHeaders["Content-Length"] = strlen((string) $responseBody);
+            outputHttpResponse(STATUS_CODE_OK, STATUS_MESSAGE_OK, $generatedHeaders, $responseBody);
 
             return;
         }
     }
 
-    $statuscode = "401";
-    $statusMessage = "Unauthorized";
     $responseBody = '<h1 style="color:red">NOT FOUND</h1>';
 
-    $generatedHeaders["Content-Length"] = strlen((string)$responseBody);
-    outputHttpResponse($statuscode, $statusMessage, $generatedHeaders, $responseBody);
+    $generatedHeaders["Content-Length"] = strlen((string) $responseBody);
+    outputHttpResponse(STATUS_CODE_UNAUTHORIZED, STATUS_MESSAGE_UNAUTHORIZED, $generatedHeaders, $responseBody);
 }
 
 /**
