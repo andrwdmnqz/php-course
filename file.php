@@ -15,12 +15,13 @@ function incrementClicksCounter() {
 
     // Get saved value and increment it
     $clicksCounter = trim(file_get_contents($counterFile));
+
+    showClicksCounter($clicksCounter);
+
     $clicksCounter++;
 
     // Save new value
     file_put_contents("clicks_counter.txt", $clicksCounter);
-
-    showClicksCounter($clicksCounter);
 }
 
 /**
