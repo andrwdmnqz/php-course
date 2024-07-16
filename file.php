@@ -33,5 +33,3 @@ function showClicksCounter($clicksCounter) {
 }
 
 incrementClicksCounter();
-
-?>
