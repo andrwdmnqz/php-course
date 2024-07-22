@@ -45,7 +45,6 @@ $contents = readHttpLikeInput();
  * @param string $body body of response
  */
 function outputHttpResponse($statuscode, $statusmessage, $headers, $body) {
-    
     echo "HTTP/1.1 $statuscode $statusmessage" . PHP_EOL;
 
     foreach($headers as $key => $value) {
@@ -65,7 +64,6 @@ function outputHttpResponse($statuscode, $statusmessage, $headers, $body) {
  * @param string $body body of request
  */
 function processHttpRequest($method, $uri, $headers, $body) {
-
     // Define needed headers
     $generatedHeaders = [
         "Server" => "Apache/2.2.14 (Win32)",
@@ -76,7 +74,6 @@ function processHttpRequest($method, $uri, $headers, $body) {
 
     // If uri or header incorrect - return client error
     if ($uri !== "/api/checkLoginAndPassword" || $headers["Content-Type"] !== "application/x-www-form-urlencoded") {
-
         $generatedHeaders["Content-Length"] = strlen("not found");
         outputHttpResponse(STATUS_CODE_BAD_REQUEST, STATUS_MESSAGE_BAD_REQUEST, $generatedHeaders, "not found");
 
@@ -85,7 +82,6 @@ function processHttpRequest($method, $uri, $headers, $body) {
 
     // If file not exists - 500 server error
     if (!file_exists("passwords.txt")) {
-
         $generatedHeaders["Content-Length"] = strlen("not found");
         outputHttpResponse(STATUS_CODE_SERVER_ERROR, STATUS_MESSAGE_SERVER_ERROR, $generatedHeaders, "not found");
 
@@ -93,7 +89,7 @@ function processHttpRequest($method, $uri, $headers, $body) {
     }
 
     $fileLines = explode(PHP_EOL, file_get_contents("passwords.txt"));
-            
+    
     // Parse login and password from request
     parse_str($body, $parsedBody);
 
