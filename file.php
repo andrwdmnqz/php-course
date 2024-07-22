@@ -5,7 +5,6 @@
  * 
  */
 function incrementClicksCounter() {
-
     $counterFile = "clicks_counter.txt";
 
     // If file not exists - create it and put "0"
