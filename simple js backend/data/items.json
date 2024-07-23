@@ -1,0 +1,19 @@
+{
+    "items": {
+        "1": {
+            "id": 38,
+            "text": "test2",
+            "checked": false
+        },
+        "2": {
+            "id": 39,
+            "text": "testkljasfkjakf",
+            "checked": true
+        },
+        "3": {
+            "id": 40,
+            "text": "test2",
+            "checked": false
+        }
+    }
+}
